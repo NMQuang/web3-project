@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ethers } from "ethers";
+import { contractAddress } from "../contractConfig";
 
-const contractAddress = "0x0165878A594ca255338adfa4d48449f69242Eb8F";
 const abi = [
   "event Transfer(address indexed from, address indexed to, uint256 value)",
   "function symbol() view returns (string)",
