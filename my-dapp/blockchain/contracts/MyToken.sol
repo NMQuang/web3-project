@@ -7,10 +7,17 @@ contract MyToken {
     uint8 public decimals = 18;
     uint256 public totalSupply;
     mapping(address => uint256) public balanceOf;
+    address public owner;
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this function");
+        _;
+    }
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
     constructor() {
+        owner = msg.sender;
         totalSupply = 1000 * 10 ** uint256(decimals);
         balanceOf[msg.sender] = totalSupply;
     }
@@ -25,7 +32,7 @@ contract MyToken {
     }
 
     // Mint function
-    function mint(address to, uint256 amount) public {
+    function mint(address to, uint256 amount) public onlyOwner {
         require(to != address(0), "Cannot mint to zero address");
         balanceOf[to] += amount;
         totalSupply += amount;
