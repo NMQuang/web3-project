@@ -1,42 +1,30 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { ethers } from "ethers";
 import { contractAddress } from "../contractConfig";
+import Link from "next/link";
+import { useEffect } from 'react';
+import { WalletContext } from "./_app";
+import MyTokenJson from "../../blockchain/artifacts/contracts/MyToken.sol/MyToken.json";
 
-const abi = [
-  "event Transfer(address indexed from, address indexed to, uint256 value)",
-  "function symbol() view returns (string)",
-];
+const abi = MyTokenJson.abi;
 
 export default function History() {
-  const [account, setAccount] = useState("");
+  useEffect(() => {
+    import('bootstrap/dist/js/bootstrap.bundle.min.js');
+  }, []);
+  const { account, setAccount } = useContext(WalletContext);
   const [history, setHistory] = useState([]);
   const [tokenSymbol, setTokenSymbol] = useState("");
   const [isConnecting, setIsConnecting] = useState(false);
 
-  async function connectWallet() {
-    if (isConnecting) return;
-    setIsConnecting(true);
-    try {
-      if (window.ethereum) {
-        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-        setAccount(accounts[0]);
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const contract = new ethers.Contract(contractAddress, abi, provider);
-        const symbol = await contract.symbol();
-        setTokenSymbol(symbol);
-        fetchTransferHistory(contract);
-      } else {
-        alert("Please install MetaMask");
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsConnecting(false);
-    }
-  }
 
-  async function fetchTransferHistory(contract) {
+  async function fetchTransferHistory() {
+    if (!account) return;
     try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const contract = new ethers.Contract(contractAddress, abi, provider);
+      const symbol = await contract.symbol();
+      setTokenSymbol(symbol);
       const logs = await contract.queryFilter("Transfer");
       const formatted = logs.map((log) => ({
         from: log.args.from,
@@ -50,35 +38,63 @@ export default function History() {
     }
   }
 
+  useEffect(() => {
+    fetchTransferHistory();
+  }, [account]);
+
+  async function connectWallet() {
+    if (isConnecting) return;
+    setIsConnecting(true);
+    try {
+      if (window.ethereum) {
+        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+        setAccount(accounts[0]);
+      } else {
+        alert("Please install MetaMask");
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsConnecting(false);
+    }
+  }
+
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
-      <h1 className="text-2xl font-bold mb-4">Transfer History</h1>
-      {account ? (
-        <div className="w-full max-w-md bg-white p-4 rounded shadow">
-          {history.length === 0 ? (
-            <p className="text-gray-500">No transactions found.</p>
-          ) : (
-            <ul className="space-y-2 text-sm max-h-60 overflow-y-auto">
-              {history.map((tx, index) => (
-                <li key={index} className="border-b pb-2">
-                  <p><strong>From:</strong> <code>{tx.from}</code></p>
-                  <p><strong>To:</strong> <code>{tx.to}</code></p>
-                  <p><strong>Amount:</strong> {tx.value} {tokenSymbol}</p>
-                  <p className="text-gray-400"><strong>Tx:</strong> {tx.txHash.slice(0, 20)}...</p>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      ) : (
-        <button
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
-          onClick={connectWallet}
-          disabled={isConnecting}
-        >
-          {isConnecting ? "Connecting..." : "Connect Wallet"}
-        </button>
-      )}
-    </main>
+    <>
+      <div className="container mt-5">
+        <h1 className="text-2xl font-bold mb-4">Transfer History</h1>
+        {account ? (
+          <div className="w-full max-w-md bg-white p-4 rounded shadow">
+            {history.length === 0 ? (
+              <p className="text-gray-500">No transactions found.</p>
+            ) : (
+              <ul className="space-y-2 text-sm max-h-60 overflow-y-auto">
+                {history.map((tx, index) => (
+                  <li key={index} className="border-b pb-2">
+                    {tx.from === "0x0000000000000000000000000000000000000000" ? (
+                      <span className="badge bg-success me-2">Mint</span>
+                    ) : (
+                      <span className="badge bg-primary me-2">Transfer</span>
+                    )}
+                    <p><strong>From:</strong> <code>{tx.from}</code></p>
+                    <p><strong>To:</strong> <code>{tx.to}</code></p>
+                    <p><strong>Amount:</strong> {tx.value} {tokenSymbol}</p>
+                    <p className="text-gray-400"><strong>Tx:</strong> {tx.txHash.slice(0, 20)}...</p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ) : (
+          <button
+            className={"connect-wallet-btn px-4 py-2" + (isConnecting ? " disabled" : "")}
+            onClick={connectWallet}
+            disabled={isConnecting}
+          >
+            {isConnecting ? "Connecting..." : "Connect Wallet"}
+          </button>
+        )}
+      </div>
+    </>
   );
 } 

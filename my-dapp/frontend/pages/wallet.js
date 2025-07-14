@@ -1,21 +1,44 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { ethers } from "ethers";
 import { contractAddress } from "../contractConfig";
+import Link from "next/link";
+import { useEffect } from 'react';
+import { WalletContext } from "./_app";
+import MyTokenJson from "../../blockchain/artifacts/contracts/MyToken.sol/MyToken.json";
 
-const abi = [
-  "function name() view returns (string)",
-  "function symbol() view returns (string)",
-  "function balanceOf(address) view returns (uint256)",
-  "function totalSupply() view returns (uint256)",
-];
+const abi = MyTokenJson.abi;
 
 export default function Wallet() {
-  const [account, setAccount] = useState("");
+  useEffect(() => {
+    import('bootstrap/dist/js/bootstrap.bundle.min.js');
+  }, []);
+  const { account, setAccount } = useContext(WalletContext);
   const [tokenName, setTokenName] = useState("");
   const [tokenSymbol, setTokenSymbol] = useState("");
   const [balance, setBalance] = useState("");
   const [totalSupply, setTotalSupply] = useState("");
   const [isConnecting, setIsConnecting] = useState(false);
+
+  useEffect(() => {
+    async function fetchTokenInfo() {
+      if (!account) return;
+      try {
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const contract = new ethers.Contract(contractAddress, abi, provider);
+        const name = await contract.name();
+        const symbol = await contract.symbol();
+        const bal = await contract.balanceOf(account);
+        const supply = await contract.totalSupply();
+        setTokenName(name);
+        setTokenSymbol(symbol);
+        setBalance(ethers.formatUnits(bal, 18));
+        setTotalSupply(ethers.formatUnits(supply, 18));
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchTokenInfo();
+  }, [account]);
 
   async function connectWallet() {
     if (isConnecting) return;
@@ -45,25 +68,27 @@ export default function Wallet() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
-      <h1 className="text-2xl font-bold mb-4">My DApp Starter</h1>
-      {account ? (
-        <>
-          <p className="text-green-600 mb-2">Connected: {account}</p>
-          <p className="mb-1">Token Name: <strong>{tokenName}</strong></p>
-          <p className="mb-1">Symbol: <strong>{tokenSymbol}</strong></p>
-          <p>Total Supply: <strong>{totalSupply}</strong> {tokenSymbol}</p>
-          <p className="mb-6">Your Balance: <strong>{balance}</strong> {tokenSymbol}</p>
-        </>
-      ) : (
-        <button
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
-          onClick={connectWallet}
-          disabled={isConnecting}
-        >
-          {isConnecting ? "Connecting..." : "Connect Wallet"}
-        </button>
-      )}
-    </main>
+    <>
+      <div className="container mt-5">
+        <h1 className="text-2xl font-bold mb-4">Wallet</h1>
+        {account ? (
+          <div className="w-full max-w-md bg-white p-4 rounded shadow mx-auto">
+            <p className="text-green-600 mb-2">Connected: {account}</p>
+            <p className="mb-1">Token Name: <strong>{tokenName}</strong></p>
+            <p className="mb-1">Symbol: <strong>{tokenSymbol}</strong></p>
+            <p>Total Supply: <strong>{totalSupply}</strong> {tokenSymbol}</p>
+            <p className="mb-6">Your Balance: <strong>{balance}</strong> {tokenSymbol}</p>
+          </div>
+        ) : (
+          <button
+            className={"connect-wallet-btn px-4 py-2" + (isConnecting ? " disabled" : "")}
+            onClick={connectWallet}
+            disabled={isConnecting}
+          >
+            {isConnecting ? "Connecting..." : "Connect Wallet"}
+          </button>
+        )}
+      </div>
+    </>
   );
 } 
