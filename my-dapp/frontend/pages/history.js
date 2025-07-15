@@ -26,12 +26,18 @@ export default function History() {
       const symbol = await contract.symbol();
       setTokenSymbol(symbol);
       const logs = await contract.queryFilter("Transfer");
-      const formatted = logs.map((log) => ({
-        from: log.args.from,
-        to: log.args.to,
-        value: ethers.formatUnits(log.args.value, 18),
-        txHash: log.transactionHash,
-      })).reverse();
+      const formatted = await Promise.all(
+        logs.map(async (log) => {
+          const block = await provider.getBlock(log.blockNumber);
+          return {
+            from: log.args.from,
+            to: log.args.to,
+            value: ethers.formatUnits(log.args.value, 18),
+            txHash: log.transactionHash,
+            timestamp: new Date(block.timestamp * 1000).toLocaleString(),
+          };
+        })
+      );
       setHistory(formatted);
     } catch (err) {
       console.error("Failed to fetch history:", err);
@@ -80,6 +86,7 @@ export default function History() {
                     <p><strong>To:</strong> <code>{tx.to}</code></p>
                     <p><strong>Amount:</strong> {tx.value} {tokenSymbol}</p>
                     <p className="text-gray-400"><strong>Tx:</strong> {tx.txHash.slice(0, 20)}...</p>
+                    <p><strong>Time:</strong> {tx.timestamp}</p>
                   </li>
                 ))}
               </ul>

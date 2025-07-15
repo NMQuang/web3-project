@@ -41,6 +41,12 @@ export default function MyApp({ Component, pageProps }) {
                   <Link href="/mint" className="nav-link" style={{ color: '#222' }}>Mint Token</Link>
                 </li>
                 <li className="nav-item">
+                  <Link href="/approve" className="nav-link" style={{ color: '#222' }}>Approve</Link>
+                </li>
+                <li className="nav-item">
+                  <Link href="/transferForm" className="nav-link" style={{ color: '#222' }}>TransferFrom</Link>
+                </li>
+                <li className="nav-item">
                   <Link href="/history" className="nav-link" style={{ color: '#222' }}>Transfer History</Link>
                 </li>
               </ul>
