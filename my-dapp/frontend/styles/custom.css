@@ -1,0 +1,53 @@
+.custom-bg {
+  min-height: 100vh;
+  background: #e6f9ec; /* xanh lá cây nhạt */
+}
+
+.btn, button, .btn:focus, .btn:active {
+  border: none !important;
+  box-shadow: none !important;
+  color: #000 !important;
+}
+
+/* Nút Connect Wallet nổi bật: nền vàng tươi, chữ đen, hover cam */
+button.connect-wallet-btn, .connect-wallet-btn {
+  background-color: #ffd600 !important;
+  color: #000 !important;
+  font-weight: bold;
+  border-radius: 0.375rem;
+  transition: background 0.2s;
+}
+button.connect-wallet-btn:hover, .connect-wallet-btn:hover {
+  background-color: #ff9800 !important;
+  color: #fff !important;
+}
+
+.btn-primary, .btn-primary:focus, .btn-primary:active {
+  background-color: #198754 !important;
+  color: #000 !important;
+}
+
+.btn-success, .btn-success:focus, .btn-success:active {
+  background-color: #28a745 !important;
+  color: #000 !important;
+}
+
+.btn-warning, .btn-warning:focus, .btn-warning:active {
+  background-color: #ffc107 !important;
+  color: #000 !important;
+}
+
+.btn-info, .btn-info:focus, .btn-info:active {
+  background-color: #0dcaf0 !important;
+  color: #000 !important;
+}
+
+.btn-secondary, .btn-secondary:focus, .btn-secondary:active {
+  background-color: #6c757d !important;
+  color: #000 !important;
+}
+
+button, .btn {
+  border-radius: 0.375rem;
+  font-weight: 500;
+} 
