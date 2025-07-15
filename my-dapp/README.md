@@ -1,5 +1,4 @@
 My DApp Starter - Documentation
-Author: QuangNM
 ===============================
 
 This project demonstrates a simple ERC20-like token using Solidity + Hardhat and a frontend built with Next.js + Tailwind CSS.
@@ -27,6 +26,16 @@ Current Features Implemented
    - Fetches data from contract via `queryFilter(...)`.
    - Shows sender, receiver, amount, and transaction hash.
 
+5. **Approve Spender**
+   - Authorize another address to spend tokens on your behalf.
+   - Uses `approve(spender, amount)` method.
+   - Stored in `allowance[owner][spender]`.
+
+6. **Transfer From (Authorized)**
+   - Allows approved account to transfer tokens from your wallet.
+   - Uses `transferFrom(from, to, amount)`.
+   - Requires sufficient allowance + balance of owner.
+
 Technology Stack
 ----------------
 
@@ -42,4 +51,10 @@ Usage Instructions
 - Deploy contract: `npx hardhat run scripts/deploy.js --network localhost`
 - Start frontend: `cd frontend && npm run dev`
 - Connect MetaMask to Hardhat localhost (Chain ID: 31337)
-- Use different pages for wallet, transfer, mint, and history
+- Use different pages for wallet, transfer, mint, approve, transferfrom, and history
+
+Note
+----
+Replace `<PUT_YOUR_DEPLOYED_ADDRESS_HERE>` in frontend config with the actual contract address after deployment.
+
+Author: Web3 Learner
