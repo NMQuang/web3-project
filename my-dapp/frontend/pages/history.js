@@ -29,12 +29,26 @@ export default function History() {
       const formatted = await Promise.all(
         logs.map(async (log) => {
           const block = await provider.getBlock(log.blockNumber);
+          const timestamp = new Date(block.timestamp * 1000).toLocaleString();
+          const explain = await fetch("/api/tx-interpret", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              from: log.args.from,
+              to: log.args.to,
+              value: ethers.formatUnits(log.args.value, 18),
+              timestamp,
+            }),
+          });
+          const ai = await explain.json();
+
           return {
             from: log.args.from,
             to: log.args.to,
             value: ethers.formatUnits(log.args.value, 18),
             txHash: log.transactionHash,
-            timestamp: new Date(block.timestamp * 1000).toLocaleString(),
+            timestamp,
+            aiSummary: ai.reply,
           };
         })
       );
@@ -87,6 +101,9 @@ export default function History() {
                     <p><strong>Amount:</strong> {tx.value} {tokenSymbol}</p>
                     <p className="text-gray-400"><strong>Tx:</strong> {tx.txHash.slice(0, 20)}...</p>
                     <p><strong>Time:</strong> {tx.timestamp}</p>
+                    <p className="block text-sm text-gray-600 italic">
+                    <strong>AI:</strong>{tx.aiSummary}
+                    </p>
                   </li>
                 ))}
               </ul>

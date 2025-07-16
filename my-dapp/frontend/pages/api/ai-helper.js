@@ -1,3 +1,4 @@
+import { apiUrl } from "../../apiConfig.js";
 export default async function handler(req, res) {
   const { messages } = req.body;
 
@@ -8,7 +9,7 @@ export default async function handler(req, res) {
 
   try {
     const geminiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-pro:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      apiUrl,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
