@@ -43,14 +43,14 @@
 ## Features DOING
 | Công cụ        | Dùng cho                                  |
 | -------------- | ----------------------------------------- |
-| OpenAI API     | LLM trả lời/gợi ý                         |
+| OpenAI/Google API     | LLM trả lời/gợi ý                         |
 | Replicate API  | DALL·E, StableDiffusion, Whisper,...      |
 | TensorFlow\.js | Phân tích dữ liệu trên frontend           |
 | Pinata / IPFS  | Lưu nội dung AI sinh ra (ảnh/video/audio) |
 | Ethers.js      | Giao tiếp smart contract                  |
 
 1. AI hỗ trợ người dùng trong DApp
-   - Sử dụng OpenAI API (hoặc local LLM nếu cần rẻ/riêng tư)
+   - Sử dụng OpenAI/Google API (hoặc local LLM nếu cần rẻ/riêng tư)
    - Dùng frontend tạo chat interface hoặc popover thông minh
 2. AI phân tích dữ liệu giao dịch
    - Dùng TensorFlow.js, hoặc sklearn backend + API
