@@ -2,6 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/custom.css';
 import Link from "next/link";
 import { useEffect, createContext, useState } from 'react';
+import ChatPopup from "../components/chatPopup_openai.js";
 
 export const WalletContext = createContext({
   account: '',
@@ -25,7 +26,7 @@ export default function MyApp({ Component, pageProps }) {
       <div className="custom-bg">
         <nav className="navbar navbar-expand-lg sticky-top" style={{ backgroundColor: '#a7ffeb', position: 'sticky', top: 0, zIndex: 1030, width: '100%' }}>
           <div className="container-fluid">
-            <a className="navbar-brand" href="#" style={{ color: '#222', fontWeight: 'bold' }}>My DApp</a>
+            <a className="navbar-brand" href="/" style={{ color: '#222', fontWeight: 'bold' }}>My DApp</a>
             <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
               <span className="navbar-toggler-icon"></span>
             </button>
@@ -55,6 +56,7 @@ export default function MyApp({ Component, pageProps }) {
         </nav>
         <div className="container mt-5" style={{ marginTop: '6rem' }}>
           <Component {...pageProps} />
+          <ChatPopup /> 
         </div>
       </div>
     </WalletContext.Provider>

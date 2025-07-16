@@ -51,3 +51,10 @@ button, .btn {
   border-radius: 0.375rem;
   font-weight: 500;
 } 
+
+.chat-popup-container {
+  position: fixed !important;
+  bottom: 1rem !important;
+  right: 1rem !important;
+  z-index: 9999 !important;
+}
