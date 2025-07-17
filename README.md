@@ -43,7 +43,7 @@
 | Tích hợp frontend upload file/NFT | UI thực chiến Web3                  |
 | Kết nối testnet & verify contract | Chuẩn bị bước deploy thực tế        |
 
-## Features DOING
+## Features AI TODO
 | Công cụ        | Dùng cho                                  |
 | -------------- | ----------------------------------------- |
 | OpenAI/Google API     | LLM trả lời/gợi ý                         |
