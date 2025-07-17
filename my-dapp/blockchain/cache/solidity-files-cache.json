@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "D:\\OTHER\\Web3\\web3-project\\my-dapp\\blockchain\\contracts\\MyToken.sol": {
-      "lastModificationDate": 1752568886679,
-      "contentHash": "ad2582c63568139adccc094a1daddf8e",
+      "lastModificationDate": 1752573995002,
+      "contentHash": "127ae9f528951d33b62092aa880849bf",
       "sourceName": "contracts/MyToken.sol",
       "solcConfig": {
         "version": "0.8.28",
