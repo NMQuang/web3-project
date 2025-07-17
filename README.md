@@ -30,6 +30,9 @@
    - Allows approved account to transfer tokens from your wallet.
    - Uses `transferFrom(from, to, amount)`.
    - Requires sufficient allowance + balance of owner.
+7. **AI hỗ trợ người dùng trong DApp**
+   - Sử dụng OpenAI/Google API (hoặc local LLM nếu cần rẻ/riêng tư)
+   - Dùng frontend tạo chat interface hoặc popover thông minh
 ## Features TODO
 | Tính năng                         | Mục tiêu học được                   |
 | --------------------------------- | ----------------------------------- |
@@ -49,13 +52,10 @@
 | Pinata / IPFS  | Lưu nội dung AI sinh ra (ảnh/video/audio) |
 | Ethers.js      | Giao tiếp smart contract                  |
 
-1. AI hỗ trợ người dùng trong DApp
-   - Sử dụng OpenAI/Google API (hoặc local LLM nếu cần rẻ/riêng tư)
-   - Dùng frontend tạo chat interface hoặc popover thông minh
-2. AI phân tích dữ liệu giao dịch
+1. AI phân tích dữ liệu giao dịch
    - Dùng TensorFlow.js, hoặc sklearn backend + API
    - Sử dụng data từ event logs của DApp
-3. AI tạo nội dung on-chain (kết hợp NFT)
+2. AI tạo nội dung on-chain (kết hợp NFT)
    - Pinata, Web3.storage, NFT.Storage để lưu ảnh
    - Frontend form + AI backend API
   
