@@ -34,6 +34,14 @@
    - Uses `transferFrom(from, to, amount)`.
    - Requires sufficient allowance + balance of owner.
 
+7. **Signed Transfer (Gasless UX)**
+   - Implements EIP-712 typed data signing for token transfers.
+   - User signs off-chain using MetaMask → backend relayer sends the transaction.
+   - Recipient receives token without sender paying gas.
+   - Supports `deadline` + `nonce` + `chainId` to prevent replay attacks.
+   - Frontend provides a dropdown to select expiration time (e.g., 5/10/30/60 minutes).
+   - Smart contract validates and executes transfer using `transferWithSig(...)`.
+
 ## 2. Technology Stack
 
 - Smart Contract: Solidity (ERC20-like)
