@@ -18,6 +18,7 @@ export default function Wallet() {
   const [balance, setBalance] = useState("");
   const [totalSupply, setTotalSupply] = useState("");
   const [isConnecting, setIsConnecting] = useState(false);
+  const [owner, setOwner] = useState("");
 
   useEffect(() => {
     async function fetchTokenInfo() {
@@ -29,6 +30,8 @@ export default function Wallet() {
         const symbol = await contract.symbol();
         const bal = await contract.balanceOf(account);
         const supply = await contract.totalSupply();
+        const owner = await contract.owner();
+        setOwner(owner);
         setTokenName(name);
         setTokenSymbol(symbol);
         setBalance(ethers.formatUnits(bal, 18));
@@ -53,6 +56,8 @@ export default function Wallet() {
         const symbol = await contract.symbol();
         const bal = await contract.balanceOf(accounts[0]);
         const supply = await contract.totalSupply();
+        const owner = await contract.owner();
+        setOwner(owner);
         setTokenName(name);
         setTokenSymbol(symbol);
         setBalance(ethers.formatUnits(bal, 18));
@@ -73,6 +78,7 @@ export default function Wallet() {
         <h1 className="text-2xl font-bold mb-4">Wallet</h1>
         {account ? (
           <div className="w-full max-w-md bg-white p-4 rounded shadow mx-auto">
+            <p className="text-green-600 mb-2">Owner: {owner}</p>
             <p className="text-green-600 mb-2">Connected: {account}</p>
             <p className="mb-1">Token Name: <strong>{tokenName}</strong></p>
             <p className="mb-1">Symbol: <strong>{tokenSymbol}</strong></p>
