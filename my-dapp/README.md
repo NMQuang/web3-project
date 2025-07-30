@@ -146,3 +146,17 @@
    ```
    https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent
    ```
+## 6. Security Integration 
+
+| #  | Nhóm                              | Tính năng bảo mật                                   | Mục tiêu                               |
+| -- | --------------------------------- | --------------------------------------------------- | -------------------------------------- |
+| 1  | **Frontend**                      | ✅ `eth_signTypedData_v4` (EIP-712)                  | Chống fake transaction, chống phishing |
+| 2  | **Smart Contract**                | ✅ `verifySignature()` + `nonce`                     | Chống replay attack                    |
+| 3  | **Access Control**                | ✅ `onlyOwner`, `onlyAuthorized`                     | Giới hạn quyền call các hàm nhạy cảm   |
+| 4  | **Rate limiting**                 | ✅ Thêm `cooldown`, `limit per address`              | Chống spam / abuse token               |
+| 5  | **Gas griefing defense**          | ✅ Kiểm tra `msg.sender != address(0)` / `gasleft()` | Chống "gas bomb attack"                |
+| 6  | **Permissionless function guard** | ✅ Check `require(amount > 0)`                       | Chống empty call, call fee wasting     |
+| 7  | **Transaction intent**            | ✅ Message signing before `transferFrom()`           | Xác thực người gửi chủ động            |
+| 8  | **Reentrancy Guard**              | ✅ `nonReentrant` modifier (nếu có `call`)           | Ngăn double-spend                      |
+| 9  | **Client-side detection**         | ✅ Kiểm tra chainId (ex: Sepolia only)               | Tránh dùng nhầm chain                  |
+| 10 | **Security Logging**              | ✅ Ghi log AI interpret + onchain tx                 | Phân tích truy vết                     |
