@@ -3,6 +3,7 @@ import { ethers } from "ethers";
 import { contractAddress } from "../contractConfig";
 import { WalletContext } from "./_app";
 import MyTokenJson from "../../blockchain/artifacts/contracts/MyToken.sol/MyToken.json";
+import { getProvider } from "../commonConfig";
 
 const abi = MyTokenJson.abi;
 
@@ -10,7 +11,7 @@ export default function SignedTransfer() {
   const { account, setAccount } = useContext(WalletContext);
   const [to, setTo] = useState("");
   const [amount, setAmount] = useState("");
-  const [deadline, setDeadline] = useState("");
+  const [expiryMinutes, setExpiryMinutes] = useState("60");
   const [status, setStatus] = useState("");
   const [balance, setBalance] = useState("");
   const [tokenSymbol, setTokenSymbol] = useState("");
@@ -18,21 +19,22 @@ export default function SignedTransfer() {
 
    // Tự động fetch balance và symbol khi account thay đổi
    useEffect(() => {
-    async function fetchBalance() {
-      if (!account) return;
-      try {
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const contract = new ethers.Contract(contractAddress, abi, provider);
-        const bal = await contract.balanceOf(account);
-        const symbol = await contract.symbol();
-        setBalance(ethers.formatUnits(bal, 18));
-        setTokenSymbol(symbol);
-      } catch (err) {
-        console.error(err);
-      }
-    }
     fetchBalance();
   }, [account]);
+
+  async function fetchBalance() {
+    if (!account) return;
+    try {
+      const provider = getProvider();
+      const contract = new ethers.Contract(contractAddress, abi, provider);
+      const bal = await contract.balanceOf(account);
+      const symbol = await contract.symbol();
+      setBalance(ethers.formatUnits(bal, 18));
+      setTokenSymbol(symbol);
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   async function connectWallet() {
     if (isConnecting) return;
@@ -41,7 +43,7 @@ export default function SignedTransfer() {
       if (window.ethereum) {
         const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
         setAccount(accounts[0]);
-        const provider = new ethers.BrowserProvider(window.ethereum);
+        const provider = getProvider();
         const contract = new ethers.Contract(contractAddress, abi, provider);
         const bal = await contract.balanceOf(accounts[0]);
         const symbol = await contract.symbol();
@@ -74,9 +76,17 @@ export default function SignedTransfer() {
         setStatus("Invalid amount.");
         return;
       }
+      const deadline = Math.floor(Date.now() / 1000) + Number(expiryMinutes) * 60;
       setStatus("Signed Transfering...");
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
+      const provider = getProvider();
+      let signer;
+      if (provider instanceof ethers.BrowserProvider) {
+        signer = await provider.getSigner();
+      } else {
+        // Nếu đang chạy ở server (không có MetaMask), báo lỗi hoặc chuyển sang dùng API call
+        setStatus("Only MetaMask signing is supported on frontend.");
+        return;
+      }
       const signerAddress = await signer.getAddress();
       const contract = new ethers.Contract(contractAddress, abi, signer);
 
@@ -118,13 +128,31 @@ export default function SignedTransfer() {
       console.log("Recovered signer:", recovered);
       console.log("Expected signer:", await signer.getAddress());
 
-      const tx = await contract.transferWithSig(signerAddress, to, value, deadline, signature);
-      await tx.wait();
+      // const tx = await contract.transferWithSig(signerAddress, to, value, deadline, signature);
+      // await tx.wait();
 
-      setStatus("Signed Transfer successful!");
-      // Cập nhật số dư
-      const updatedBalance = await contract.balanceOf(account);
-      setBalance(ethers.formatUnits(updatedBalance, 18));
+      const res = await fetch("/api/relay-transfer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          from: signerAddress,
+          to,
+          amount: value.toString(),      // gửi dưới dạng string
+          deadline,
+          signature,
+        }),
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        setStatus("Signed Transfer successful!");
+        await fetchBalance();
+      } else {
+        console.error("igned Transfer failed:", result.detail);
+        setStatus("igned Transfer failed: " + result.detail);
+      }
+
     } catch (err) {
       setStatus("Signed Transfer failed.");
       console.error(err);
@@ -138,7 +166,9 @@ export default function SignedTransfer() {
         <h1 className="text-2xl font-bold mb-4">Signed Transfer (EIP-712)</h1>
         {account ? (
           <>
-            <p className="mb-4">Your balance: <strong>{balance}</strong> {tokenSymbol}</p>
+            <p className="mb-4">Your balance: <strong>{balance}</strong> {tokenSymbol}
+            <button onClick={fetchBalance} className="btn btn-sm btn-outline-primary ms-2">Check Balance</button>
+            </p>
             <form onSubmit={signAndSend} className="w-full max-w-md bg-white p-4 rounded shadow">
               <div className="row g-2 align-items-center mb-2">
                 <div className="col">
@@ -160,12 +190,19 @@ export default function SignedTransfer() {
                   />
                 </div>
                 <div className="col">
-                  <input
-                    placeholder="Deadline (timestamp)"
+                  {/* <input
+                    type="number" 
+                    placeholder="Hết hạn sau (phút)"
                     className="form-control"
-                    value={deadline}
-                    onChange={(e) => setDeadline(e.target.value)}
-                  />
+                    value={expiryMinutes} onChange={(e) => setExpiryMinutes(e.target.value)} 
+                  /> */}
+                  <select className="form-select mb-2" value={expiryMinutes} onChange={(e) => setExpiryMinutes(e.target.value)}>
+                    <option value="5">Hết hạn sau 5 phút</option>
+                    <option value="10">Hết hạn sau 10 phút</option>
+                    <option value="30">Hết hạn sau 30 phút</option>
+                    <option value="60">Hết hạn sau 60 phút</option>
+                  </select>
+
                 </div>
                 <div className="col-auto">
                   <button
