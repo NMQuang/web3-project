@@ -124,9 +124,21 @@ export default function SignedTransfer() {
       console.log("types: ", types)
       console.log("message: ", message)
       console.log("signature: ", signature)
-      const recovered = ethers.verifyTypedData(domain, types, message, signature);
+      const recovered = await contract.verifySignature(
+        signerAddress,
+        to,
+        value.toString(),  
+        currentNonce,
+        deadline,
+        signature,
+      );
       console.log("Recovered signer:", recovered);
       console.log("Expected signer:", await signer.getAddress());
+      
+      if (recovered.toLowerCase() !== signerAddress.toLowerCase()) {
+        setStatus("Invalid signature");
+        return;
+      }
 
       // const tx = await contract.transferWithSig(signerAddress, to, value, deadline, signature);
       // await tx.wait();

@@ -124,4 +124,33 @@ contract MyToken {
         balanceOf[to] += amount;
         emit Transfer(from, to, amount);
     }
+
+    // verifySignature function
+    function verifySignature(
+        address from,
+        address to,
+        uint256 amount,
+        uint256 nonce,
+        uint256 deadline,
+        bytes calldata signature
+    ) public view returns (address) {
+        require(block.timestamp <= deadline, "Signature expired");
+
+        bytes32 structHash = keccak256(abi.encode(
+            TRANSFER_TYPEHASH,
+            from,
+            to,
+            amount,
+            nonce,
+            deadline
+        ));
+
+        bytes32 digest = keccak256(abi.encodePacked(
+            "\x19\x01",
+            DOMAIN_SEPARATOR,
+            structHash
+        ));
+
+        return digest.recover(signature);
+    }
 }

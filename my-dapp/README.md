@@ -34,13 +34,17 @@
    - Uses `transferFrom(from, to, amount)`.
    - Requires sufficient allowance + balance of owner.
 
-7. **Signed Transfer (Gasless UX)**
+7. **Signed Transfer (Gasless UX) and Verify Signature**
    - Implements EIP-712 typed data signing for token transfers.
    - User signs off-chain using MetaMask → backend relayer sends the transaction.
    - Recipient receives token without sender paying gas.
    - Supports `deadline` + `nonce` + `chainId` to prevent replay attacks.
    - Frontend provides a dropdown to select expiration time (e.g., 5/10/30/60 minutes).
    - Smart contract validates and executes transfer using `transferWithSig(...)`.
+   - Implements a `verifySignature(...)` view function in the smart contract.
+   - Allows frontend to verify if an EIP-712 signature is valid before sending the transaction.
+   - Helps detect invalid or replayed signatures early, improving security and UX.
+   - Returns the recovered signer address for comparison.
 
 ## 2. Technology Stack
 
