@@ -32,8 +32,8 @@ Thumbs.db
 *.swo
 
 # Hardhat / Foundry / Solidity build artifacts
-my-app/blockchain/artifacts/
-my-app/blockchain/cache/
+artifacts/
+cache/
 
 # Coverage reports
 coverage/
@@ -41,6 +41,7 @@ coverage/
 # Temporary files
 *.tmp
 *.temp
+*.txt
 
 # Mac system files
 .DS_Store
