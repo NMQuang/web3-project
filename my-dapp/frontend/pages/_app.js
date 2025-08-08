@@ -50,6 +50,9 @@ export default function MyApp({ Component, pageProps }) {
                 <li className="nav-item">
                   <Link href="/history" className="nav-link" style={{ color: '#222' }}>Transfer History</Link>
                 </li>
+                <li className="nav-item">
+                  <Link href="/signedTransfer" className="nav-link" style={{ color: '#222' }}>SignedTransfer</Link>
+                </li>
               </ul>
             </div>
           </div>

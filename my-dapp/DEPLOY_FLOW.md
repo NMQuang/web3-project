@@ -71,5 +71,15 @@ NEXT_PUBLIC_CONTRACT_ADDRESS=0x... (Sepolia contract address)
   - ✅ Transfer, Mint, Approve
   - ✅ AI integration
   - ✅ Transaction History
-
+  - ✅ Signed Transfer (gasless)
+    - Ensure environment variables are set:
+      ```env
+      RELAYER_PRIVATE_KEY=0x...
+      NEXT_PUBLIC_CONTRACT_ADDRESS=0x...
+      NEXT_PUBLIC_ALCHEMY_API_KEY=your_key_here
+      ```
+    - Test flow:
+      - Sign using MetaMask
+      - Relay API sends transaction with gas
+      - Recipient receives token
 ---
