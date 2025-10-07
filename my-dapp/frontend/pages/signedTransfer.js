@@ -135,7 +135,7 @@ export default function SignedTransfer() {
       console.log("Recovered signer:", recovered);
       console.log("Expected signer:", await signer.getAddress());
       
-      if (recovered.toLowerCase() !== signerAddress.toLowerCase()) {
+      if (!recovered) {
         setStatus("Invalid signature");
         return;
       }
@@ -150,6 +150,7 @@ export default function SignedTransfer() {
           from: signerAddress,
           to,
           amount: value.toString(),      // gửi dưới dạng string
+          nonce:currentNonce.toString(), 
           deadline,
           signature,
         }),

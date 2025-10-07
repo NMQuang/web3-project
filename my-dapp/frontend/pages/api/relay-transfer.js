@@ -16,13 +16,16 @@ if (process.env.NODE_ENV === "development") {
     signer = new ethers.Wallet(process.env.RELAYER_PRIVATE_KEY, provider);
 }
 const contract = new ethers.Contract(contractAddress, MyToken.abi, signer);
+console.log("contract: ", contract);
+console.log("signer: ", signer);
+console.log("provider: ", provider);
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
 
   try {
-    const { from, to, amount, deadline, signature } = req.body;
-    const tx = await contract.transferWithSig(from, to, amount, deadline, signature);
+    const { from, to, amount, nonce,deadline, signature } = req.body;
+    const tx = await contract.transferWithSig(from, to, amount, nonce, deadline, signature);
     await tx.wait();
 
     return res.status(200).json({ success: true, txHash: tx.hash });
