@@ -11,7 +11,7 @@ export default async function handler(req, res) {
     };
   
     try {
-      const result = await fetch(
+      const response = await fetch(
         apiUrl,
         {
           method: "POST",
@@ -19,11 +19,16 @@ export default async function handler(req, res) {
           body: JSON.stringify(body)
         }
       );
+
+      if (!response.ok) {
+        const errorDetails = await response.json();
+        console.error("Chi tiết lỗi từ API:", errorDetails);
+        throw new Error(`Yêu cầu API thất bại với mã trạng thái ${response.status}`);
+      }
   
-      const data = await result.json();
-      const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "Không có phản hồi.";
-      console.log("data: ", data?.candidates)
-      res.status(200).json({ reply });
+      const result = await response.json();
+      console.log("Kết quả từ Gemini:", JSON.stringify(result, null, 2));
+      res.status(200).json({ reply: JSON.stringify(result, null, 2) });
     } catch (e) {
       res.status(500).json({ reply: "Lỗi diễn giải từ Gemini." });
     }

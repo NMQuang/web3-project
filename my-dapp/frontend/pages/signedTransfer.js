@@ -150,7 +150,7 @@ export default function SignedTransfer() {
           from: signerAddress,
           to,
           amount: value.toString(),      // gửi dưới dạng string
-          nonce:currentNonce.toString(), 
+          nonce: currentNonce.toString(), // gửi dưới dạng string
           deadline,
           signature,
         }),

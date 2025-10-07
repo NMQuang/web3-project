@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   }));
 
   try {
-    const geminiRes = await fetch(
+    const response = await fetch(
       apiUrl,
       {
         method: "POST",
@@ -19,11 +19,16 @@ export default async function handler(req, res) {
       }
     );
 
-    const data = await geminiRes.json();
-    const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "Không có phản hồi từ Gemini";
-    res.status(200).json({ reply });
-  } catch (err) {
-    console.error("Gemini API error:", err);
-    res.status(500).json({ reply: "Lỗi gọi Gemini API" });
+    if (!response.ok) {
+      const errorDetails = await response.json();
+      console.error("Chi tiết lỗi từ API:", errorDetails);
+      throw new Error(`Yêu cầu API thất bại với mã trạng thái ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log("Kết quả từ Gemini:", JSON.stringify(result, null, 2));
+    res.status(200).json({ reply: JSON.stringify(result, null, 2) });
+  } catch (e) {
+    res.status(500).json({ reply: "Lỗi diễn giải từ Gemini." });
   }
 }
